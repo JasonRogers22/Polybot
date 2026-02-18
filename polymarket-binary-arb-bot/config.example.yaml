@@ -1,0 +1,75 @@
+# config.example.yaml - Example configuration
+# Copy to config.yaml and customize
+
+mode: paper  # paper | live (ALWAYS defaults to paper for safety)
+
+# NOTE: In PAPER mode, polymarket credentials are optional.
+# You can omit the polymarket: block entirely unless you plan to enable live trading.
+
+polymarket:
+  private_key: ${POLY_PRIVATE_KEY}  # Set in environment
+  safe_address: ${POLY_SAFE_ADDRESS}  # Your Polymarket Safe address
+  signature_type: 0  # 0=EOA, 1=Magic/Email, 2=Gnosis Safe
+  
+  # Builder Program (optional, for gasless trading)
+  builder:
+    api_key: ${POLY_BUILDER_API_KEY}
+    api_secret: ${POLY_BUILDER_API_SECRET}
+    api_passphrase: ${POLY_BUILDER_API_PASSPHRASE}
+
+strategy:
+  name: binary_parity_arb
+  params:
+    pair_cost_threshold: 0.99  # Buy if YES_avg + NO_avg < this
+    target_balance_ratio: 0.9  # Keep YES_qty / NO_qty within this of 1.0
+    min_liquidity: 10.0        # Skip if liquidity < $10
+    order_size: 5.0            # Size per order in USDC
+    max_imbalance: 0.3         # Max (YES_qty - NO_qty) / total_qty
+    fee_enabled_extra_margin: 0.01  # Extra margin when market has fees
+    slippage_buffer: 0.002     # Buffer for price slippage
+    safety_margin: 0.001       # Additional safety cushion
+
+risk:
+  max_daily_loss: 50.0         # USD
+  max_position_per_market: 100.0  # USD per market
+  max_position_total: 500.0    # USD across all markets
+  stale_data_timeout: 60       # seconds
+  kill_switch_enabled: true
+  
+  # Order throttling
+  max_orders_per_minute: 50    # Stay under 60 API limit
+  cooldown_after_error: 30     # seconds
+
+markets:
+  # Option A: discover per-coin 15m markets (focus list)
+  focus: ["BTC"]  # BTC, ETH, SOL, XRP
+  market_type: "15m"  # 15-minute markets
+  auto_discover: true  # Auto-find current 15-min markets
+
+  # Option B: Single target market discovery (COMMENTED OUT by default)
+  # Uncomment this section ONLY if you want to monitor a single custom market
+  # When target is set, it ignores the focus list entirely
+  # target:
+  #   asset: "ETH"
+  #   keyword: "Up or Down"
+  #   window_minutes: 15
+  #   min_liquidity: 0
+  #   min_volume: 0
+  #   search_limit: 120
+
+data:
+  websocket_reconnect: true
+  websocket_ping_interval: 30  # seconds
+  orderbook_buffer_size: 100   # historical prices to keep
+  reconnect_max_attempts: 10
+  reconnect_delay: 5           # seconds
+
+logging:
+  level: INFO  # DEBUG | INFO | WARNING | ERROR | CRITICAL
+  file: logs/bot.log
+  console: true
+  structured: true
+
+storage:
+  database: data/positions.db  # SQLite
+  backup_interval: 3600        # seconds
