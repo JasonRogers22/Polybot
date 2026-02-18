@@ -1,0 +1,100 @@
+# HOW TO UPDATE THE BOT
+
+## IMPORTANT: You must update BOTH src AND config.yaml!
+
+Your .env file stays in C:\PolyBot\ and never needs to be touched.
+
+---
+
+## METHOD 1: Full Replacement (Safest)
+
+1. Stop the bot (Ctrl+C)
+2. Download the new polymarket-binary-arb-bot.zip
+3. Extract it
+4. **DELETE** the old folder: `C:\PolyBot\polymarket-binary-arb-bot`
+5. **COPY** the new extracted folder to `C:\PolyBot\`
+6. Your `.env` stays at `C:\PolyBot\.env` (don't touch it!)
+7. Run: `cd C:\PolyBot\polymarket-binary-arb-bot && python examples\quickstart.py`
+
+---
+
+## METHOD 2: Replace src + config (What you've been doing - BUT you need config.yaml too!)
+
+1. Stop the bot (Ctrl+C)
+2. Download the new polymarket-binary-arb-bot.zip
+3. Extract it
+4. **DELETE**: `C:\PolyBot\polymarket-binary-arb-bot\src`
+5. **COPY**: new `src` folder → `C:\PolyBot\polymarket-binary-arb-bot\src`
+6. **COPY**: new `config.yaml` → `C:\PolyBot\polymarket-binary-arb-bot\config.yaml` ← YOU'RE MISSING THIS STEP!
+7. Run: `cd C:\PolyBot\polymarket-binary-arb-bot && python examples\quickstart.py`
+
+---
+
+## WHY YOU'RE ONLY SEEING 1 MARKET
+
+Your current config.yaml has:
+```yaml
+focus: ["BTC"]  # Only BTC
+```
+
+The new config.yaml has:
+```yaml
+focus: ["BTC", "ETH", "SOL", "XRP"]  # All 4 markets
+```
+
+You're only replacing `src` but keeping your old `config.yaml`, so you're still running with `["BTC"]`.
+
+---
+
+## QUICK FIX RIGHT NOW
+
+Just manually edit your config.yaml:
+
+1. Open: `C:\PolyBot\polymarket-binary-arb-bot\config.yaml` in Notepad
+2. Find line 45 (or search for "focus:")
+3. Change from:
+   ```yaml
+   focus: ["BTC"]
+   ```
+   To:
+   ```yaml
+   focus: ["BTC", "ETH", "SOL", "XRP"]
+   ```
+4. Save
+5. Restart bot
+
+---
+
+## Files That Change vs Files That Don't
+
+**CHANGE (update these):**
+- `src/` folder - Code updates
+- `config.yaml` - Settings updates
+- `config.example.yaml` - Template updates
+
+**DON'T CHANGE (keep your version):**
+- `.env` - Your credentials (stays in C:\PolyBot\.env)
+
+**DON'T NEED TO CHANGE (but won't hurt):**
+- `examples/quickstart.py` - Rarely changes
+- `requirements.txt` - Rarely changes
+- `README.md`, `SETUP.md`, `LICENSE` - Documentation
+
+---
+
+## Expected Output After Fix
+
+You should see:
+```
+[OK] Found BTC 15m market: Bitcoin Up or Down...
+[OK] Found ETH 15m market: Ethereum Up or Down...
+[OK] Found SOL 15m market: Solana Up or Down...
+[OK] Found XRP 15m market: XRP Up or Down...
+[START] Bot started, monitoring 4 markets
+```
+
+Not:
+```
+[OK] Found BTC 15m market: Bitcoin Up or Down...
+[START] Bot started, monitoring 1 markets  ← Wrong!
+```
